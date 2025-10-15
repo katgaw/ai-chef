@@ -43,7 +43,12 @@ async def generate_recipe(request: RecipeRequest):
     """Generate a recipe based on diet preference using GPT-4"""
     try:
         # Initialize OpenAI client with user's API key
-        client = OpenAI(api_key=request.api_key)
+        # Use explicit configuration to avoid proxy-related issues on Vercel
+        client = OpenAI(
+            api_key=request.api_key,
+            max_retries=2,
+            timeout=60.0
+        )
         
         # Create the prompt based on diet type
         prompt = f"""Create a simple, delicious {request.diet_type} dinner recipe. 

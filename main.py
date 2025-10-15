@@ -1,11 +1,21 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
 import os
+from pathlib import Path
 
 app = FastAPI(title="AI Chef - Diet Recipe Generator")
+
+# Add CORS middleware for Vercel deployment
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class RecipeRequest(BaseModel):
     api_key: str
@@ -14,8 +24,19 @@ class RecipeRequest(BaseModel):
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
     """Serve the main HTML page"""
-    with open("static/index.html", "r") as f:
-        return f.read()
+    # Support both local and Vercel paths
+    html_paths = [
+        Path("static/index.html"),
+        Path(__file__).parent / "static" / "index.html"
+    ]
+    
+    for html_path in html_paths:
+        if html_path.exists():
+            with open(html_path, "r") as f:
+                return f.read()
+    
+    # Fallback if file not found
+    raise HTTPException(status_code=404, detail="HTML file not found")
 
 @app.post("/generate-recipe")
 async def generate_recipe(request: RecipeRequest):

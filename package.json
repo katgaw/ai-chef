@@ -1,0 +1,22 @@
+{
+  "name": "ai-chef",
+  "version": "1.0.0",
+  "description": "AI-powered diet recipe generator using FastAPI and GPT-4",
+  "scripts": {
+    "dev": "python main.py",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel"
+  },
+  "keywords": [
+    "fastapi",
+    "openai",
+    "gpt-4",
+    "recipe",
+    "diet",
+    "vegetarian",
+    "vegan"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+
